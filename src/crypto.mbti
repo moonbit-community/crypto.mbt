@@ -1,0 +1,13 @@
+package "FrenchPicnic/crypto"
+
+// Values
+fn caesar_decrypt(String, offset~ : Int = ..) -> String raise
+
+fn caesar_encrypt(String, offset~ : Int = ..) -> String raise
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
