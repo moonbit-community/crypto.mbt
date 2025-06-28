@@ -1,6 +1,6 @@
 {
     "import":[
-        // {"path":"moonbitlang/x/crypto","alias": "xpto"},
+        {"path":"moonbitlang/x/crypto","alias": "xpto"},
         {"path":"moonbitlang/x/encoding"}
     ]
 }

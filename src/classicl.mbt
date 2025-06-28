@@ -1,5 +1,6 @@
 ///|
 pub fn caesar_encrypt(plaintext : String, offset~ : Int = 3) -> String raise {
+  // TODO: add key
   let old = plaintext.to_bytes().to_fixedarray()
   let new = FixedArray::make(old.length(), b'\x00')
   let oft = offset % 26

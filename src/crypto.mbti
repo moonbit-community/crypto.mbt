@@ -1,11 +1,20 @@
 package "FrenchPicnic/crypto"
 
 // Values
+fn aes_encrypt(FixedArray[Byte], FixedArray[Byte], mode~ : AESMode = .., padding~ : String = ..) -> FixedArray[Byte]
+
 fn caesar_decrypt(String, offset~ : Int = ..) -> String raise
 
 fn caesar_encrypt(String, offset~ : Int = ..) -> String raise
 
 // Types and methods
+pub enum AESMode {
+  ECB
+  CBC
+  CFB
+  OFB
+  CTR
+}
 
 // Type aliases
 
