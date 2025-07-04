@@ -1,13 +1,25 @@
 package "FrenchPicnic/crypto"
 
+import(
+  "moonbitlang/x/encoding"
+)
+
 // Values
 fn aes_encrypt(FixedArray[Byte], FixedArray[Byte], mode~ : AESMode = .., padding~ : String = ..) -> FixedArray[Byte]
 
 fn caesar_decrypt(String, offset~ : Int = ..) -> String raise
 
-fn caesar_encrypt(String, offset~ : Int = ..) -> String raise
+fn caesar_encrypt(String, offset~ : Int = .., encoding~ : @encoding.Encoding = ..) -> String raise
 
 // Types and methods
+pub struct AES {
+  data : FixedArray[Byte]
+  key : FixedArray[Byte]
+  mode : AESMode
+  padding : String
+}
+fn AES::new(FixedArray[Byte], mode~ : AESMode = .., padding~ : String = ..) -> Self
+
 pub enum AESMode {
   ECB
   CBC

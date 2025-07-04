@@ -1,5 +1,182 @@
 ///|
-let s_box : FixedArray[FixedArray[UInt]] = [
+pub enum AESMode {
+  ECB
+  CBC
+  CFB
+  OFB
+  CTR
+}
+
+///|
+pub enum Padding {
+  PKCS7
+  ISO10126
+  ISO7816
+  ANSI_X923
+  Zeros
+  NoPadding
+}
+
+///|
+pub struct AES {
+  data : Array[Byte]
+  key : Array[Byte]
+  mode : AESMode
+  padding : Padding
+}
+
+///|
+pub fn AES::new(
+  key : Array[Byte],
+  mode~ : AESMode = ECB,
+  padding~ : Padding = PKCS7
+) -> AES {
+  AES::{ data: [], key, mode, padding }
+}
+
+///|
+pub fn aes_encrypt(
+  data : Array[Byte],
+  key : Array[Byte],
+  mode~ : AESMode = ECB,
+  padding~ : Padding = PKCS7
+) -> Array[Byte] {
+  let tet = paading_text(data)
+  let result : Array[Byte] = []
+  let expanded_key = key_expansion(key)
+  for i in 0..<(tet.length() / 16) {
+    let mut text = tet[i * 16:].to_array()
+
+    // First round
+    text = add_round_key(data, expanded_key)
+    for i in 1..<10 {
+      text = sub_bytes(text)
+      text = shift_rows(text)
+      text = mix_columns(text)
+      text = add_round_key(text, expanded_key[i * 16:].to_array())
+    }
+    // Final round
+    text = sub_bytes(text)
+    text = shift_rows(text)
+    text = add_round_key(text, expanded_key[-16:].to_array())
+    result.append(text)
+  }
+  result
+}
+
+///|
+fn paading_text(text : Array[Byte], padding~ : Padding = PKCS7) -> Array[Byte] {
+  match padding {
+    PKCS7 => padding_PKCS7(text)
+    _ => ...
+  }
+}
+
+///|
+fn padding_PKCS7(text : Array[Byte]) -> Array[Byte] {
+  let pad : Array[Byte] = []
+  for i in 0..<(16 - text.length() % 16) {
+    pad.append([(16 - text.length() % 16).to_byte()])
+  }
+  text.append(pad)
+  text
+}
+
+///|
+fn sub_bytes(data : Array[Byte]) -> Array[Byte] {
+  for i, v in data {
+    data[i] = s_box[v.to_int() >> 4][v.to_int() & 0xf]
+  }
+  data
+}
+
+///|
+fn add_round_key(data : Array[Byte], round_key : Array[Byte]) -> Array[Byte] {
+  for i in 0..<16 {
+    data[i] = data[i] ^ round_key[i]
+  }
+  data
+}
+
+///|
+fn shift_rows(data : Array[Byte]) -> Array[Byte] {
+  for i in 1..<4 {
+    let tmp = data[i * 4:]
+    for j in 0..<4 {
+      data[i * 4 + j] = tmp[(j + i) % 4]
+    }
+  }
+  data
+}
+
+///|
+fn shift(data : Array[Byte], offset : Int) -> Array[Byte] {
+  [
+    data[offset % 4],
+    data[(1 + offset) % 4],
+    data[(2 + offset) % 4],
+    data[(3 + offset) % 4],
+  ]
+}
+
+///|
+fn mix_columns(data : Array[Byte]) -> Array[Byte] {
+  fn mul_by_2(n : Byte) {
+    let mut s = (n << 1) & 0xff
+    if (n & 0x80) != 0 {
+      s = s ^ 0x1b
+    }
+    s
+  }
+
+  fn mul_by_3(n : Byte) {
+    mul_by_2(n) ^ n
+  }
+
+  for i in 0..<4 {
+    let offset = i * 4
+    let s0 = data[offset]
+    let s1 = data[offset + 1]
+    let s2 = data[offset + 2]
+    let s3 = data[offset + 3]
+
+    // mix
+    data[offset] = mul_by_2(s0) ^ mul_by_3(s1) ^ s2 ^ s3
+    data[offset + 1] = s0 ^ mul_by_2(s1) ^ mul_by_3(s2) ^ s3
+    data[offset + 2] = s0 ^ s1 ^ mul_by_2(s2) ^ mul_by_3(s3)
+    data[offset + 3] = mul_by_3(s0) ^ s1 ^ s2 ^ mul_by_2(s3)
+  }
+  data
+}
+
+///|
+let rc : Array[Byte] = [
+  0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d,
+]
+
+///|
+fn key_expansion(grid : Array[Byte]) -> Array[Byte] {
+  for i in 0..<40 {
+    let r = grid[grid.length() - 4:grid.length()]
+    if i % 4 == 0 {
+      // 对上一轮最后4字节自循环、S-box置换、轮常数异或，从而计算出当前新一轮最前4字节
+      for j, v in shift(r.to_array(), 1) {
+        let mut fg : Byte = 0
+        if j == 0 {
+          fg = rc[i / 4]
+        }
+        r[j] = s_box[v.to_int() >> 4][v.to_int() & 0xf] ^ fg
+      }
+    }
+    for j in 0..<4 {
+      grid.append([grid[grid.length() - 16] ^ r[j]])
+    }
+  }
+  grid
+}
+
+///|
+let s_box : Array[Array[Byte]] = [
   [
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe,
     0xd7, 0xab, 0x76,
@@ -67,7 +244,7 @@ let s_box : FixedArray[FixedArray[UInt]] = [
 ]
 
 ///|
-let s_box_inv : FixedArray[FixedArray[UInt]] = [
+let s_box_inv : Array[Array[Byte]] = [
   [
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81,
     0xf3, 0xd7, 0xfb,
@@ -133,106 +310,3 @@ let s_box_inv : FixedArray[FixedArray[UInt]] = [
     0x21, 0x0c, 0x7d,
   ],
 ]
-
-///|
-pub enum AESMode {
-  ECB
-  CBC
-  CFB
-  OFB
-  CTR
-}
-
-///|
-pub fn aes_encrypt(
-  data : FixedArray[Byte],
-  key : FixedArray[Byte],
-  mode~ : AESMode = ECB,
-  padding~ : String = "PKCS7"
-) -> FixedArray[Byte] {
-  // First round
-  // add_round_key(data, expanded_key)
-  // for i in 1..<10 {
-  //   sub_bytes(data)
-  //   shift_rows(data)
-  //   mix_columns(data)
-  //   add_round_key(data, expanded_key[i * 16:])
-  // }
-  // // Final round
-  // sub_bytes(data)
-  // shift_rows(data)
-  // add_round_key(data, expanded_key[-16:])
-  data
-}
-
-///|
-fn sub_bytes(data : FixedArray[Byte]) -> FixedArray[Byte] {
-  for i, v in data {
-    data[i] = s_box[v.to_int() >> 4][v.to_int() & 0xf].to_byte()
-  }
-  data
-}
-
-///|
-fn add_round_key(
-  data : FixedArray[Byte],
-  round_key : FixedArray[Byte]
-) -> FixedArray[Byte] {
-  for i in 0..<16 {
-    data[i] = data[i] ^ round_key[i]
-  }
-  data
-}
-
-///|
-fn shift_rows(data : FixedArray[Byte]) -> FixedArray[Byte] {
-  for i in 1..<4 {
-    let tmp = data[i * 4 + 3]
-    data[i * 4 + 3] = data[i * 4]
-    data[i * 4] = tmp
-    let tmp = data[i * 4 + 1]
-    data[i * 4 + 1] = data[i * 4 + 2]
-    data[i * 4 + 2] = tmp
-  }
-  data
-}
-
-///|
-fn mix_columns(data : FixedArray[Byte]) -> FixedArray[Byte] {
-  fn mul_by_2(n : Byte) {
-    let mut s = (n << 1) & 0xff
-    if (n & 0x80) != 0 {
-      s = s ^ 0x1b
-    }
-    s
-  }
-
-  fn mul_by_3(n : Byte) {
-    mul_by_2(n) ^ n
-  }
-
-  for i in 0..<4 {
-    let offset = i * 4
-    let s0 = data[offset]
-    let s1 = data[offset + 1]
-    let s2 = data[offset + 2]
-    let s3 = data[offset + 3]
-
-    // mix
-    data[offset] = mul_by_2(s0) ^ mul_by_3(s1) ^ s2 ^ s3
-    data[offset + 1] = s0 ^ mul_by_2(s1) ^ mul_by_3(s2) ^ s3
-    data[offset + 2] = s0 ^ s1 ^ mul_by_2(s2) ^ mul_by_3(s3)
-    data[offset + 3] = mul_by_3(s0) ^ s1 ^ s2 ^ mul_by_2(s3)
-  }
-  data
-}
-
-///|
-let rc = [
-  0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d,
-]
-
-///|
-fn key_expansion(grid : Array[Int]) -> Array[Int] {
-  grid
-}
