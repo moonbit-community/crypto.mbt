@@ -12,9 +12,27 @@
 
 ## TODO 
 
+### Classicl
 
-- [ ] AES
+- [X] Caesar
+
+### Modern
+
+- [ ] AES **暂不稳定, 谨慎使用**
+- [ ] SM4
+- [ ] DES
 
 
 ## Usage
 
+还没发包呢
+
+```bash
+moon update
+moon add FrenchPicnic/cryptox
+```
+
+```moonbit
+inspect(@FrenchPicnic/cryptox.caesar_encrypt("Hello"), content="Khoor")
+inspect(@FrenchPicnic/cryptox.caesar_encrypt("World", offset=5), content="Btwqi")
+```
