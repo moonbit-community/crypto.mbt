@@ -29,7 +29,7 @@ pub struct AES {
 pub fn AES::new(
   key : Array[Byte],
   mode~ : AESMode = ECB,
-  padding~ : Padding = PKCS7
+  padding~ : Padding = PKCS7,
 ) -> AES {
   AES::{ data: [], key, mode, padding }
 }
@@ -39,7 +39,7 @@ pub fn aes_encrypt(
   data : Array[Byte],
   key : Array[Byte],
   mode~ : AESMode = ECB,
-  padding~ : Padding = PKCS7
+  padding~ : Padding = PKCS7,
 ) -> Array[Byte] {
   let tet = paading_text(data)
   let result : Array[Byte] = []
@@ -68,7 +68,7 @@ pub fn aes_encrypt(
 fn paading_text(text : Array[Byte], padding~ : Padding = PKCS7) -> Array[Byte] {
   match padding {
     PKCS7 => padding_PKCS7(text)
-    _ => ...
+    ...
   }
 }
 
