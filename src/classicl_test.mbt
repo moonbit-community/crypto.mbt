@@ -20,3 +20,9 @@ test "caesar_decrypt" {
   let a = "ikkjxepさ"
   assert_eq(caesar_decrypt(a, offset=100), "moonbitさ")
 }
+
+///|
+test "bacon" {
+  let a = "AAAAA"
+  assert_eq(bacon_encrypt(a), "a")
+}

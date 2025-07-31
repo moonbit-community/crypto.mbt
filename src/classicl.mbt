@@ -24,7 +24,7 @@
 pub fn caesar_encrypt(
   plaintext : String,
   offset~ : Int = 3,
-  encoding~ : @encoding.Encoding = UTF16
+  encoding~ : @encoding.Encoding = UTF16,
 ) -> String raise {
   // TODO: add key
   let old = plaintext.to_bytes().to_fixedarray()
@@ -73,4 +73,43 @@ pub fn caesar_encrypt(
 pub fn caesar_decrypt(ciphertext : String, offset~ : Int = 3) -> String raise {
   let oft = offset % 26
   caesar_encrypt(ciphertext, offset=-oft)
+}
+
+///|
+let bacon_box : Map[String, String] = {
+  "AAAAA": "a",
+  "AABBA": "g",
+  "ABBAA": "n",
+  "BAABA": "t",
+  "AAAAB": "b",
+  "AABBB": "h",
+  "ABBAB": "o",
+  "BAABB": "u-v",
+  "AAABA": "c",
+  "ABAAA": "i-j",
+  "ABBBA": "p",
+  "BABAA": "w",
+  "AAABB": "d",
+  "ABAAB": "k",
+  "ABBBB": "q",
+  "BABAB": "x",
+  "AABAA": "e",
+  "ABABA": "l",
+  "BAAAA": "r",
+  "BABBA": "y",
+  "AABAB": "f",
+  "ABABB": "m",
+  "BAAAB": "s",
+  "BABBB": "z",
+}
+
+///|
+pub fn bacon_encrypt(plaintext : String) -> String raise {
+  let mut result = ""
+  for i = 0; i < plaintext.length(); i = i + 5 {
+    if i + 5 <= plaintext.length() {
+      result = result + bacon_box[plaintext[i:i + 5].to_string()].unwrap()
+    }
+  }
+  result
 }
