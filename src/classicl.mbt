@@ -108,7 +108,7 @@ pub fn bacon_encrypt(plaintext : String) -> String raise {
   let mut result = ""
   for i = 0; i < plaintext.length(); i = i + 5 {
     if i + 5 <= plaintext.length() {
-      result = result + bacon_box[plaintext[i:i + 5].to_string()].unwrap()
+      result = result + bacon_box.get(plaintext[i:i + 5].to_string()).unwrap()
     }
   }
   result

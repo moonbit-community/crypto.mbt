@@ -1,9 +1,11 @@
 ///|
 pub fn des_encrypt(
-  data : Array[Byte],
-  key : Array[Byte],
+  _data : Array[Byte],
+  _key : Array[Byte],
   mode~ : AESMode = ECB,
   padding~ : Padding = PKCS7,
 ) -> Array[Byte] {
-  ...
+  let _ = mode
+  let _ = padding
+  []
 }

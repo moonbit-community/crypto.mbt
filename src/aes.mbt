@@ -1,20 +1,11 @@
 ///|
 pub enum AESMode {
   ECB
-  CBC
-  CFB
-  OFB
-  CTR
 }
 
 ///|
 pub enum Padding {
   PKCS7
-  ISO10126
-  ISO7816
-  ANSI_X923
-  Zeros
-  NoPadding
 }
 
 ///|
@@ -38,8 +29,8 @@ pub fn AES::new(
 pub fn aes_encrypt(
   data : Array[Byte],
   key : Array[Byte],
-  mode~ : AESMode = ECB,
-  padding~ : Padding = PKCS7,
+  _mode~ : AESMode = ECB,
+  _padding~ : Padding = PKCS7,
 ) -> Array[Byte] {
   let tet = paading_text(data)
   let result : Array[Byte] = []
@@ -68,7 +59,6 @@ pub fn aes_encrypt(
 fn paading_text(text : Array[Byte], padding~ : Padding = PKCS7) -> Array[Byte] {
   match padding {
     PKCS7 => padding_PKCS7(text)
-    ...
   }
 }
 
@@ -244,7 +234,7 @@ let s_box : Array[Array[Byte]] = [
 ]
 
 ///|
-let s_box_inv : Array[Array[Byte]] = [
+let _s_box_inv : Array[Array[Byte]] = [
   [
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81,
     0xf3, 0xd7, 0xfb,

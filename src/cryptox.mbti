@@ -6,7 +6,7 @@ import(
 )
 
 // Values
-fn aes_encrypt(Array[Byte], Array[Byte], mode? : AESMode, padding? : Padding) -> Array[Byte]
+fn aes_encrypt(Array[Byte], Array[Byte], _mode? : AESMode, _padding? : Padding) -> Array[Byte]
 
 fn bacon_encrypt(String) -> String raise
 
@@ -29,19 +29,10 @@ fn AES::new(Array[Byte], mode? : AESMode, padding? : Padding) -> Self
 
 pub enum AESMode {
   ECB
-  CBC
-  CFB
-  OFB
-  CTR
 }
 
 pub enum Padding {
   PKCS7
-  ISO10126
-  ISO7816
-  ANSI_X923
-  Zeros
-  NoPadding
 }
 
 // Type aliases
