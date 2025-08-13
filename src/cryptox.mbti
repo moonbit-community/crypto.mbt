@@ -6,15 +6,15 @@ import(
 )
 
 // Values
-fn aes_encrypt(Array[Byte], Array[Byte], mode~ : AESMode = .., padding~ : Padding = ..) -> Array[Byte]
+fn aes_encrypt(Array[Byte], Array[Byte], mode? : AESMode, padding? : Padding) -> Array[Byte]
 
 fn bacon_encrypt(String) -> String raise
 
-fn caesar_decrypt(String, offset~ : Int = ..) -> String raise
+fn caesar_decrypt(String, offset? : Int) -> String raise
 
-fn caesar_encrypt(String, offset~ : Int = .., encoding~ : @encoding.Encoding = ..) -> String raise
+fn caesar_encrypt(String, offset? : Int, encoding? : @encoding.Encoding) -> String raise
 
-fn des_encrypt(Array[Byte], Array[Byte], mode~ : AESMode = .., padding~ : Padding = ..) -> Array[Byte]
+fn des_encrypt(Array[Byte], Array[Byte], mode? : AESMode, padding? : Padding) -> Array[Byte]
 
 // Errors
 
@@ -25,7 +25,7 @@ pub struct AES {
   mode : AESMode
   padding : Padding
 }
-fn AES::new(Array[Byte], mode~ : AESMode = .., padding~ : Padding = ..) -> Self
+fn AES::new(Array[Byte], mode? : AESMode, padding? : Padding) -> Self
 
 pub enum AESMode {
   ECB
