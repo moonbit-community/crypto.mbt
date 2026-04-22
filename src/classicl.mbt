@@ -27,7 +27,7 @@ pub fn caesar_encrypt(
   encoding~ : @encoding.Encoding = UTF16,
 ) -> String raise {
   // TODO: add key
-  let old = plaintext.to_bytes().to_fixedarray()
+  let old = @encoding.encode(UTF16, plaintext).to_fixedarray()
   let new = FixedArray::make(old.length(), b'\x00')
   let oft = offset % 26
   // TODO: support other encode
@@ -45,7 +45,7 @@ pub fn caesar_encrypt(
     }
     new[i + 1] = old[i + 1]
   }
-  @encoding.decoder(encoding).decode(@bytes.from_fixedarray(new))
+  @encoding.decoder(encoding).decode(Bytes::from_array(new))
 }
 
 ///|
@@ -104,7 +104,7 @@ let bacon_box : Map[String, String] = {
 }
 
 ///|
-pub fn bacon_encrypt(plaintext : String) -> String raise {
+pub fn bacon_encrypt(plaintext : String) -> String {
   let mut result = ""
   for i = 0; i < plaintext.length(); i = i + 5 {
     if i + 5 <= plaintext.length() {
