@@ -157,10 +157,10 @@ let rc : Array[Byte] = [
 ///|
 fn key_expansion(grid : Array[Byte]) -> Array[Byte] {
   for i in 0..<40 {
-    let r = grid[grid.length() - 4:grid.length()]
+    let r = grid[grid.length() - 4:grid.length()].to_array()
     if i % 4 == 0 {
       // 对上一轮最后4字节自循环、S-box置换、轮常数异或，从而计算出当前新一轮最前4字节
-      for j, v in shift(r.to_array(), 1) {
+      for j, v in shift(r, 1) {
         let mut fg : Byte = 0
         if j == 0 {
           fg = rc[i / 4]
