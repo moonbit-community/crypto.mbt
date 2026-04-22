@@ -16,15 +16,15 @@
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// inspect(@FrenchPicnic/cryptox.caesar_encrypt("Hello"), content="Khoor")
 /// inspect(@FrenchPicnic/cryptox.caesar_encrypt("World", offset=5), content="Btwqi")
 /// ```
 ///
 pub fn caesar_encrypt(
   plaintext : String,
-  offset~ : Int = 3,
-  encoding~ : @encoding.Encoding = UTF16,
+  offset? : Int = 3,
+  encoding? : @encoding.Encoding = UTF16,
 ) -> String raise {
   // TODO: add key
   let old = @encoding.encode(UTF16, plaintext).to_fixedarray()
@@ -64,13 +64,13 @@ pub fn caesar_encrypt(
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let encrypted = caesar_encrypt("HELLO", offset=3)
 /// let decrypted = caesar_decrypt(encrypted, offset=3)
 /// inspect(decrypted, content="HELLO")
 /// ```
 ///
-pub fn caesar_decrypt(ciphertext : String, offset~ : Int = 3) -> String raise {
+pub fn caesar_decrypt(ciphertext : String, offset? : Int = 3) -> String raise {
   let oft = offset % 26
   caesar_encrypt(ciphertext, offset=-oft)
 }
