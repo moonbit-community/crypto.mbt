@@ -8,6 +8,9 @@ pub enum AESMode {
 }
 
 ///|
+let _aes_modes : Array[AESMode] = [ECB, CBC, CFB, OFB, CTR]
+
+///|
 pub enum Padding {
   PKCS7
   ISO10126
@@ -16,6 +19,11 @@ pub enum Padding {
   Zeros
   NoPadding
 }
+
+///|
+let _paddings : Array[Padding] = [
+  PKCS7, ISO10126, ISO7816, ANSI_X923, Zeros, NoPadding,
+]
 
 ///|
 pub struct AES {
