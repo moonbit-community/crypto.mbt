@@ -8,6 +8,9 @@ pub enum AESMode {
 }
 
 ///|
+let _aes_modes : Array[AESMode] = [ECB, CBC, CFB, OFB, CTR]
+
+///|
 pub enum Padding {
   PKCS7
   ISO10126
@@ -16,6 +19,16 @@ pub enum Padding {
   Zeros
   NoPadding
 }
+
+///|
+let _paddings : Array[Padding] = [
+  PKCS7,
+  ISO10126,
+  ISO7816,
+  ANSI_X923,
+  Zeros,
+  NoPadding,
+]
 
 ///|
 pub struct AES {
@@ -28,8 +41,8 @@ pub struct AES {
 ///|
 pub fn AES::new(
   key : Array[Byte],
-  mode~ : AESMode = ECB,
-  padding~ : Padding = PKCS7,
+  mode? : AESMode = ECB,
+  padding? : Padding = PKCS7,
 ) -> AES {
   AES::{ data: [], key, mode, padding }
 }
@@ -38,10 +51,13 @@ pub fn AES::new(
 pub fn aes_encrypt(
   data : Array[Byte],
   key : Array[Byte],
-  mode~ : AESMode = ECB,
-  padding~ : Padding = PKCS7,
+  mode? : AESMode = ECB,
+  padding? : Padding = PKCS7,
 ) -> Array[Byte] {
-  let tet = paading_text(data)
+  match mode {
+    ECB | CBC | CFB | OFB | CTR => ()
+  }
+  let tet = paading_text(data, padding~)
   let result : Array[Byte] = []
   let expanded_key = key_expansion(key)
   for i in 0..<(tet.length() / 16) {
@@ -65,21 +81,78 @@ pub fn aes_encrypt(
 }
 
 ///|
-fn paading_text(text : Array[Byte], padding~ : Padding = PKCS7) -> Array[Byte] {
+fn paading_text(text : Array[Byte], padding? : Padding = PKCS7) -> Array[Byte] {
   match padding {
     PKCS7 => padding_PKCS7(text)
-    ...
+    ISO10126 => padding_ISO10126(text)
+    ISO7816 => padding_ISO7816(text)
+    ANSI_X923 => padding_ANSI_X923(text)
+    Zeros => padding_zeros(text)
+    NoPadding => text
+  }
+}
+
+///|
+fn padding_size(text : Array[Byte]) -> Int {
+  let rem = text.length() % 16
+  if rem == 0 {
+    16
+  } else {
+    16 - rem
   }
 }
 
 ///|
 fn padding_PKCS7(text : Array[Byte]) -> Array[Byte] {
   let pad : Array[Byte] = []
-  for i in 0..<(16 - text.length() % 16) {
-    pad.append([(16 - text.length() % 16).to_byte()])
+  let pad_len = padding_size(text)
+  for _ in 0..<pad_len {
+    pad.append([pad_len.to_byte()])
   }
   text.append(pad)
   text
+}
+
+///|
+fn padding_ISO10126(text : Array[Byte]) -> Array[Byte] {
+  padding_ANSI_X923(text)
+}
+
+///|
+fn padding_ISO7816(text : Array[Byte]) -> Array[Byte] {
+  let pad : Array[Byte] = [0x80]
+  for _ in 1..<padding_size(text) {
+    pad.append([0x00])
+  }
+  text.append(pad)
+  text
+}
+
+///|
+fn padding_ANSI_X923(text : Array[Byte]) -> Array[Byte] {
+  let pad : Array[Byte] = []
+  let pad_len = padding_size(text)
+  for _ in 1..<pad_len {
+    pad.append([0x00])
+  }
+  pad.append([pad_len.to_byte()])
+  text.append(pad)
+  text
+}
+
+///|
+fn padding_zeros(text : Array[Byte]) -> Array[Byte] {
+  let rem = text.length() % 16
+  if rem == 0 {
+    text
+  } else {
+    let pad : Array[Byte] = []
+    for _ in 0..<(16 - rem) {
+      pad.append([0x00])
+    }
+    text.append(pad)
+    text
+  }
 }
 
 ///|
@@ -157,10 +230,10 @@ let rc : Array[Byte] = [
 ///|
 fn key_expansion(grid : Array[Byte]) -> Array[Byte] {
   for i in 0..<40 {
-    let r = grid[grid.length() - 4:grid.length()]
+    let r = grid[grid.length() - 4:grid.length()].to_array()
     if i % 4 == 0 {
       // 对上一轮最后4字节自循环、S-box置换、轮常数异或，从而计算出当前新一轮最前4字节
-      for j, v in shift(r.to_array(), 1) {
+      for j, v in shift(r, 1) {
         let mut fg : Byte = 0
         if j == 0 {
           fg = rc[i / 4]
@@ -244,7 +317,7 @@ let s_box : Array[Array[Byte]] = [
 ]
 
 ///|
-let s_box_inv : Array[Array[Byte]] = [
+let _s_box_inv : Array[Array[Byte]] = [
   [
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81,
     0xf3, 0xd7, 0xfb,

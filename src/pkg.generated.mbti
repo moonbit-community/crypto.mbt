@@ -1,0 +1,50 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "FrenchPicnic/cryptox"
+
+import {
+  "moonbitlang/x/encoding",
+}
+
+// Values
+pub fn aes_encrypt(Array[Byte], Array[Byte], mode? : AESMode, padding? : Padding) -> Array[Byte]
+
+pub fn bacon_encrypt(String) -> String
+
+pub fn caesar_decrypt(String, offset? : Int) -> String raise
+
+pub fn caesar_encrypt(String, offset? : Int, encoding? : @encoding.Encoding) -> String raise
+
+pub fn des_encrypt(Array[Byte], Array[Byte], mode? : AESMode, padding? : Padding) -> Array[Byte]
+
+// Errors
+
+// Types and methods
+pub struct AES {
+  data : Array[Byte]
+  key : Array[Byte]
+  mode : AESMode
+  padding : Padding
+}
+pub fn AES::new(Array[Byte], mode? : AESMode, padding? : Padding) -> Self
+
+pub enum AESMode {
+  ECB
+  CBC
+  CFB
+  OFB
+  CTR
+}
+
+pub enum Padding {
+  PKCS7
+  ISO10126
+  ISO7816
+  ANSI_X923
+  Zeros
+  NoPadding
+}
+
+// Type aliases
+
+// Traits
+
