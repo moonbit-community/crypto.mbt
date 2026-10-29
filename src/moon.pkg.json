@@ -1,6 +1,0 @@
-{
-    "import":[
-        {"path":"moonbitlang/x/crypto"},
-        {"path":"moonbitlang/x/encoding"}
-    ]
-}

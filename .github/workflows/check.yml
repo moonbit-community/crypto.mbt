@@ -1,0 +1,25 @@
+name: Toolchain health
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [latest, nightly]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hustcer/setup-moonbit@develop
+        with:
+          version: ${{ matrix.version }}
+      - run: moon version --all
+      - run: moon update
+      - run: moon check --target all
+      - run: moon fmt --check
+      - run: moon info --target all && git diff --exit-code
+      - run: moon test --target all
