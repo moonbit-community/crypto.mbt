@@ -6,7 +6,7 @@ test "aes_test" {
   let buff = @buffer.new()
   @encoding.encode_to("testtesttesttest", buff, encoding=UTF8)
   assert_not_eq(
-    aes_encrypt(
+    @cryptox.aes_encrypt(
       buf.to_bytes().to_array(),
       // @encoding.encode_to("test",,encoding = UTF8).to_bytes().to_fixedarray(),
       buf.to_bytes().to_array(),

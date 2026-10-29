@@ -31,7 +31,7 @@ pub fn AES::new(
   mode~ : AESMode = ECB,
   padding~ : Padding = PKCS7,
 ) -> AES {
-  AES::{ data: [], key, mode, padding }
+  AES::{ data: [], key, mode, padding, }
 }
 
 ///|
@@ -110,7 +110,7 @@ fn shift_rows(data : Array[Byte]) -> Array[Byte] {
 }
 
 ///|
-fn shift(data : Array[Byte], offset : Int) -> Array[Byte] {
+fn shift(data : Array[Byte], offset : Int32) -> Array[Byte] {
   [
     data[offset % 4],
     data[(1 + offset) % 4],
@@ -157,7 +157,7 @@ let rc : Array[Byte] = [
 ///|
 fn key_expansion(grid : Array[Byte]) -> Array[Byte] {
   for i in 0..<40 {
-    let r = grid[grid.length() - 4:grid.length()]
+    let r = grid.mut_view(start=grid.length() - 4)
     if i % 4 == 0 {
       // 对上一轮最后4字节自循环、S-box置换、轮常数异或，从而计算出当前新一轮最前4字节
       for j, v in shift(r.to_array(), 1) {

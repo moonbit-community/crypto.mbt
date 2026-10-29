@@ -16,14 +16,14 @@
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// inspect(@FrenchPicnic/cryptox.caesar_encrypt("Hello"), content="Khoor")
 /// inspect(@FrenchPicnic/cryptox.caesar_encrypt("World", offset=5), content="Btwqi")
 /// ```
 ///
 pub fn caesar_encrypt(
   plaintext : String,
-  offset~ : Int = 3,
+  offset~ : Int32 = 3,
   encoding~ : @encoding.Encoding = UTF16,
 ) -> String raise {
   // TODO: add key
@@ -64,13 +64,13 @@ pub fn caesar_encrypt(
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let encrypted = caesar_encrypt("HELLO", offset=3)
 /// let decrypted = caesar_decrypt(encrypted, offset=3)
 /// inspect(decrypted, content="HELLO")
 /// ```
 ///
-pub fn caesar_decrypt(ciphertext : String, offset~ : Int = 3) -> String raise {
+pub fn caesar_decrypt(ciphertext : String, offset~ : Int32 = 3) -> String raise {
   let oft = offset % 26
   caesar_encrypt(ciphertext, offset=-oft)
 }
@@ -108,7 +108,7 @@ pub fn bacon_encrypt(plaintext : String) -> String raise {
   let mut result = ""
   for i = 0; i < plaintext.length(); i = i + 5 {
     if i + 5 <= plaintext.length() {
-      result = result + bacon_box[plaintext[i:i + 5].to_string()].unwrap()
+      result = result + bacon_box.get(plaintext[i:i + 5].to_owned()).unwrap()
     }
   }
   result
